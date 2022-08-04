@@ -4,3 +4,5 @@
 __meta__ = {
 "_edit_group_": true
 }
+
+[node name="AnimatedSprite" type="AnimatedSprite" parent="."]
