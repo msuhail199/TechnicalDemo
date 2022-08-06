@@ -1,11 +1,13 @@
 extends KinematicBody2D
 
 
-# Declare member variables here. Examples:
-# var a = 2
-# var b = "text"
-const speed = 500
+# Const Values
+const speed = 400
 const jumpSpeed = 700
+const slowdown = 30
+const GRAVITY = 30
+const airboost = -12
+
 var velocity = Vector2()
 onready var raycastleft =  get_node("RayCastLeft")
 onready var raycastright = get_node ("RayCastRight")
@@ -18,28 +20,30 @@ enum DIRECTION {
 
 var initial = DIRECTION.NONE
 
-# Const values 
-const GRAVITY = 30
-
-func is_on_floor_custom():
-	if raycastleft.is_colliding() or raycastright.is_colliding():
-		return true
+func grad_increase():
+	if Input.is_action_pressed("right"):
+		return (velocity.x + speed*0.05) if (velocity.x < speed) else velocity.x
+	elif Input.is_action_pressed("left"):
+		return (velocity.x + -speed*0.05) if (velocity.x > -speed) else velocity.x
 	else:
-		return false
-
+		return velocity.x
 
 # in air function
 func in_air():
 	# Apply Gravity in the air.
 	velocity.y += GRAVITY
 	
+	if Input.is_action_pressed("up"):
+		velocity.y += airboost
+
 	# Apply horizontal movement in air
 	if Input.is_action_pressed("right"):
-		velocity.x = speed if initial == DIRECTION.RIGHT else speed * 0.4
+		velocity.x = speed if initial == DIRECTION.RIGHT else grad_increase()
 	elif Input.is_action_pressed("left"):
-		velocity.x = -speed if initial == DIRECTION.LEFT else -speed * 0.4
-	else:
-		velocity.x += 10 if (velocity.x < 0) else -10
+		velocity.x = -speed if initial == DIRECTION.LEFT else grad_increase()
+	else : # No button press
+		if velocity.x != 0 : # Currently moving, slowdown
+			velocity.x += slowdown if (velocity.x < 0) else -slowdown
 
 func on_ground():
 	# Set Initial Direction.
@@ -63,8 +67,7 @@ func on_ground():
 	
 func get_input():
 	# do is _on_floor and then call in_air or on_ground
-	print("Travelling in Direction : " + str(initial))
-	if is_on_floor_custom(): 
+	if raycastleft.is_colliding() or raycastright.is_colliding():
 		print("FLOOR!")
 		on_ground()
 	else:
@@ -72,5 +75,7 @@ func get_input():
 		in_air()
 
 func _physics_process(delta):
+	print(DIRECTION.keys()[initial + 1])
+	print(velocity.x)
 	get_input()
-	velocity = move_and_slide(velocity, Vector2.UP)
+	velocity = move_and_slide_with_snap(velocity, Vector2.UP)
