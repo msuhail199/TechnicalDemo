@@ -1,0 +1,33 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://assets/imported/Other/Gun.png" type="Texture" id=1]
+[ext_resource path="res://src/Actors/Objects/Weapons/Gun.gd" type="Script" id=2]
+[ext_resource path="res://assets/imported/Other/Gun Left.png" type="Texture" id=3]
+
+[sub_resource type="SpriteFrames" id=1]
+animations = [ {
+"frames": [ ExtResource( 3 ) ],
+"loop": true,
+"name": "Left",
+"speed": 5.0
+}, {
+"frames": [ ExtResource( 1 ) ],
+"loop": true,
+"name": "Right",
+"speed": 5.0
+} ]
+
+[sub_resource type="RectangleShape2D" id=2]
+extents = Vector2( 40.625, 37.25 )
+
+[node name="AnimatedSprite" type="AnimatedSprite"]
+frames = SubResource( 1 )
+animation = "Right"
+script = ExtResource( 2 )
+
+[node name="Muzzle" type="Area2D" parent="."]
+position = Vector2( 558, -209 )
+
+[node name="ShootPoint" type="CollisionShape2D" parent="Muzzle"]
+position = Vector2( 1, 2 )
+shape = SubResource( 2 )
