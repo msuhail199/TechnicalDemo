@@ -2,11 +2,11 @@ extends KinematicBody2D
 
 
 # Const Values
-const speed = 800
+const speed = 600
 const jumpSpeed = 600
 const slowdown = 30
 const GRAVITY = 30
-const airboost = -10
+const airboost = -12
 
 # Start pos
 onready var startpos = position
@@ -60,7 +60,8 @@ func on_ground():
 	elif Input.is_action_pressed("left"):
 		velocity.x = grad_increase()
 	else:
-		velocity.x = 0
+		# Decrease or stop movement
+		velocity.x += -velocity.x*0.5
 	
 	# Jump Input
 	if Input.is_action_just_pressed("up"):
@@ -93,6 +94,8 @@ func get_input():
 
 # Called each frame
 func _physics_process(delta):
+	var fps = Engine.get_frames_per_second()
+	print("Fps is : " + str(fps))
 	get_input()
 	velocity = move_and_slide_with_snap(velocity, Vector2.UP)
 
@@ -104,4 +107,6 @@ func on_shoot(var air = false):
 	b.init(facing)
 	owner.add_child(b)
 	b.transform = get_node("Gun/Muzzle").global_transform
-	velocity.x -= facing*speed*2
+	var pushback = facing*speed*3
+	velocity.x -= pushback
+	print("Pushback + " + str(pushback))

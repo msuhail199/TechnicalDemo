@@ -14,6 +14,14 @@ config/name="Godot"
 run/main_scene="res://src/Main/Level.tscn"
 config/icon="res://icon.png"
 
+[debug]
+
+settings/fps/force_fps=120
+
+[global]
+
+lossless=true
+
 [input]
 
 left={
@@ -59,4 +67,5 @@ common/enable_pause_aware_picking=true
 
 [rendering]
 
+misc/lossless_compression/force_png=true
 environment/default_environment="res://default_env.tres"
