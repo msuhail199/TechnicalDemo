@@ -3,14 +3,18 @@ extends KinematicBody2D
 
 # Const Values
 const speed = 400
-const jumpSpeed = 700
+const jumpSpeed = 600
 const slowdown = 30
 const GRAVITY = 30
-const airboost = -12
+const airboost = -10
+
+# Start pos
+onready var startpos = position
 
 var velocity = Vector2()
 onready var raycastleft =  get_node("RayCastLeft")
 onready var raycastright = get_node ("RayCastRight")
+onready var gun = get_node("Gun")
 
 enum DIRECTION {
 	LEFT = -1
@@ -33,10 +37,10 @@ func in_air():
 	# Apply Gravity in the air.
 	velocity.y += GRAVITY
 	
-	if Input.is_action_pressed("up"):
+	if Input.is_action_pressed("up") && velocity.y < -10:
 		velocity.y += airboost
 
-	# Apply horizontal movement in air
+	# Apply horizontal movement in air (Gradually)
 	if Input.is_action_pressed("right"):
 		velocity.x = speed if initial == DIRECTION.RIGHT else grad_increase()
 	elif Input.is_action_pressed("left"):
@@ -66,7 +70,14 @@ func on_ground():
 			initial = DIRECTION.LEFT
 	
 func get_input():
-	# do is _on_floor and then call in_air or on_ground
+	# show or hide gun
+	if Input.is_action_just_pressed("gun"):
+		gun.visible = !gun.visible
+	
+	if Input.is_action_just_pressed("Restart"): # Restart game
+		position = startpos
+	
+	# do is _on_floor and then call in_air or on_ground#
 	if raycastleft.is_colliding() or raycastright.is_colliding():
 		print("FLOOR!")
 		on_ground()
@@ -75,7 +86,5 @@ func get_input():
 		in_air()
 
 func _physics_process(delta):
-	print(DIRECTION.keys()[initial + 1])
-	print(velocity.x)
 	get_input()
 	velocity = move_and_slide_with_snap(velocity, Vector2.UP)
