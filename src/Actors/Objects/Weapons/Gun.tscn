@@ -1,11 +1,17 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://assets/imported/Other/Gun.png" type="Texture" id=1]
 [ext_resource path="res://src/Actors/Objects/Weapons/Gun.gd" type="Script" id=2]
 [ext_resource path="res://assets/imported/Other/Gun Left.png" type="Texture" id=3]
+[ext_resource path="res://assets/imported/Other/Gun Down.png" type="Texture" id=4]
 
 [sub_resource type="SpriteFrames" id=1]
 animations = [ {
+"frames": [ ExtResource( 4 ) ],
+"loop": true,
+"name": "Down",
+"speed": 5.0
+}, {
 "frames": [ ExtResource( 3 ) ],
 "loop": true,
 "name": "Left",
@@ -22,7 +28,7 @@ extents = Vector2( 40.625, 37.25 )
 
 [node name="AnimatedSprite" type="AnimatedSprite"]
 frames = SubResource( 1 )
-animation = "Right"
+animation = "Left"
 script = ExtResource( 2 )
 
 [node name="Muzzle" type="Area2D" parent="."]

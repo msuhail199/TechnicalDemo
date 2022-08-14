@@ -1,31 +1,27 @@
-extends KinematicBody2D
+class_name Player
+extends Actor
+
 
 
 # Const Values
 const speed = 600
 const jumpSpeed = 600
 const slowdown = 30
-const GRAVITY = 30
-const airboost = -12
+const airboost = -10
 
 # Start pos
 onready var startpos = position
 onready var inc = 0.1
 
-var velocity = Vector2()
-onready var Bullet = load("res://src/Actors/Objects/Projectiles/Bullet.tscn")
+export var maxhealth = 100
+
 onready var raycastleft =  get_node("RayCastLeft")
 onready var raycastright = get_node ("RayCastRight")
 onready var gun = get_node("Gun")
+onready var health:int = maxhealth
 
-enum DIRECTION {
-	LEFT = -1
-	NONE = 0
-	RIGHT = 1
-}
 
-var initial = DIRECTION.NONE
-
+# Gradually increase speed until max velocity.
 func grad_increase():
 	if Input.is_action_pressed("right"):
 		return (velocity.x + speed*0.1) if (velocity.x < speed) else velocity.x
@@ -33,43 +29,7 @@ func grad_increase():
 		return (velocity.x + -speed*0.1) if (velocity.x > -speed) else velocity.x
 	else:
 		return velocity.x
-
-# in air function
-func in_air():
-	# Apply Gravity in the air.
-	velocity.y += GRAVITY
 	
-	if Input.is_action_pressed("up") && velocity.y < 0:
-		velocity.y += airboost
-
-	# Apply horizontal movement in air (Gradually)
-	if Input.is_action_pressed("right"):
-		velocity.x = grad_increase()
-	elif Input.is_action_pressed("left"):
-		velocity.x = grad_increase()
-	else : # No button press
-		if velocity.x != 0 : # Currently moving, slowdown
-			velocity.x += slowdown if (velocity.x < 0) else -slowdown
-
-func on_ground():
-	# Set Initial Direction.
-	initial = DIRECTION.NONE
-	# Sideways input and on ground
-	if Input.is_action_pressed("right"):
-		velocity.x = grad_increase()
-	elif Input.is_action_pressed("left"):
-		velocity.x = grad_increase()
-	else:
-		# Decrease or stop movement
-		velocity.x += -velocity.x*0.5
-	
-	# Jump Input
-	if Input.is_action_just_pressed("up"):
-		velocity.y = -jumpSpeed
-		if velocity.x > 0 :
-			initial = DIRECTION.RIGHT
-		elif velocity.x < 0 :
-			initial = DIRECTION.LEFT
 
 # Effectively the main function
 func get_input():
@@ -77,36 +37,60 @@ func get_input():
 	if Input.is_action_just_pressed("gun"):
 		gun.visible = !gun.visible
 	
-	if Input.is_action_just_pressed("Restart"): # Restart game
+	if gun.visible && Input.is_action_just_pressed("Shoot"): # Call item action function
+		gun.on_shoot()
+	
+	if Input.is_action_just_pressed("Restart"): # Restart Test
 		position = startpos
 	
-	# do is _on_floor and then call in_air or on_ground#
+	if Input.is_action_pressed("jump"):
+		if check_for_ground():
+				jump()
+		else:
+			if velocity.y < 0:
+				velocity.y += airboost
+	
+	# Sideways input/slowdown if no imput
+	if Input.is_action_pressed("right"):
+		velocity.x = grad_increase()
+	elif Input.is_action_pressed("left"):
+		velocity.x = grad_increase()
+	else:
+		if check_for_ground() : 
+			# Decrease or stop movement
+			if fposmod(velocity.x, 1.0) < 1:
+				velocity.x = 0;
+			else:
+				velocity.x += -velocity.x * 0.2
+		else:
+			if velocity.x != 0 : # Currently moving, slowdown
+				velocity.x += slowdown if (velocity.x < 0) else -slowdown
+
+
+func check_for_ground():
+	# return true if on ground else false
 	if raycastleft.is_colliding() or raycastright.is_colliding():
 		#print("FLOOR!")
-		if gun.visible && Input.is_action_just_pressed("Shoot"):
-			on_shoot()
-		on_ground()
+		return true
 	else:
 		#print("AIR!")
-		if gun.visible && Input.is_action_just_pressed("Shoot"):
-			on_shoot(true)
-		in_air()
+		return false
+
+func apply_knockback(var facing:int = 0, var height:int = 0):
+	# Push the player back after they fire.
+	var pushback = facing * speed * 2
+	velocity.x -= pushback/2 if check_for_ground() else pushback
+	velocity.y += height * (jumpSpeed/2)
+
+func take_damage(var damage:float):
+	health -= damage
+
+func jump():
+	velocity.y = -jumpSpeed
 
 # Called each frame
 func _physics_process(delta):
-	var fps = Engine.get_frames_per_second()
-	print("Fps is : " + str(fps))
+	# Apply Gravity in the air.
+	velocity.y += GRAVITY
 	get_input()
-	velocity = move_and_slide_with_snap(velocity, Vector2.UP)
-
-
-func on_shoot(var air = false):
-	# 1 for right -1 for left
-	var facing = -1 if (gun.animation == "Left") else 1
-	var b = Bullet.instance()
-	b.init(facing)
-	owner.add_child(b)
-	b.transform = get_node("Gun/Muzzle").global_transform
-	var pushback = facing*speed*3
-	velocity.x -= pushback
-	print("Pushback + " + str(pushback))
+	velocity = move_and_slide(velocity, Vector2.UP)

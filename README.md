@@ -13,4 +13,6 @@ Basic 2d tutorial : https://docs.godotengine.org/en/stable/getting_started/first
 for interesting platformer gameplay - accessing hidden or difficult to get to areas (by breaking walls or obstacles) or for additional manueverability (a double jump type mechanic)
 or simply to attack or stop attacks from more dangerous foes. To prevent overuse, the total bullet capacity of the player is five.
 
-## 
+## Next Steps
+Organise and refactor current code to allow for more weapon options/the ability to switch weapons
+Should also inherit basic methods for actors i.e the gravity and jumping options.
