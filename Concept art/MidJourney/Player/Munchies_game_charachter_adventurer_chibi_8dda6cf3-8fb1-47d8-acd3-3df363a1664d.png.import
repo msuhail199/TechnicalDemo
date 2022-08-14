@@ -1,0 +1,35 @@
+[remap]
+
+importer="texture"
+type="StreamTexture"
+path="res://.import/Munchies_game_charachter_adventurer_chibi_8dda6cf3-8fb1-47d8-acd3-3df363a1664d.png-c43be6ffee8f350208e6866000ebd976.stex"
+metadata={
+"vram_texture": false
+}
+
+[deps]
+
+source_file="res://Concept art/MidJourney/Player/Munchies_game_charachter_adventurer_chibi_8dda6cf3-8fb1-47d8-acd3-3df363a1664d.png"
+dest_files=[ "res://.import/Munchies_game_charachter_adventurer_chibi_8dda6cf3-8fb1-47d8-acd3-3df363a1664d.png-c43be6ffee8f350208e6866000ebd976.stex" ]
+
+[params]
+
+compress/mode=0
+compress/lossy_quality=0.7
+compress/hdr_mode=0
+compress/bptc_ldr=0
+compress/normal_map=0
+flags/repeat=0
+flags/filter=true
+flags/mipmaps=false
+flags/anisotropic=false
+flags/srgb=2
+process/fix_alpha_border=true
+process/premult_alpha=false
+process/HDR_as_SRGB=false
+process/invert_color=false
+process/normal_map_invert_y=false
+stream=false
+size_limit=0
+detect_3d=true
+svg/scale=1.0

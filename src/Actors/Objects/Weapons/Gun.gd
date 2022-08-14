@@ -3,7 +3,7 @@ extends AnimatedSprite
 class_name ShotGun
 
 onready var Player = get_owner()
-onready var Bullet = load("res://src/Actors/Objects/Projectiles/Bullet.tscn")
+onready var Bullet = preload("res://src/Actors/Objects/Projectiles/Bullet.tscn")
 onready var Muzzle = $Muzzle
 
 onready var downpos = Vector2(23, 36)
